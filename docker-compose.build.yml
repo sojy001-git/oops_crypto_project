@@ -1,0 +1,34 @@
+name: crypto_project  #프로젝트 이름을 강제 설정
+
+services:
+  airflow-webserver:
+    build: . 
+    container_name: airflow-webserver
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=mysql+pymysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - AIRFLOW_HOME=/opt/airflow
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+    command: ["bash", "/entrypoint-webserver.sh"]
+    depends_on:
+      - airflow-scheduler
+
+  airflow-scheduler:
+    build: . 
+    container_name: airflow-scheduler
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=mysql+pymysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
+      - AIRFLOW_HOME=/opt/airflow
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+    command: ["bash", "/entrypoint-scheduler.sh"]
