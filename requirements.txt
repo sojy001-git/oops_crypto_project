@@ -1,0 +1,25 @@
+# ✅ Airflow 및 필수 패키지
+apache-airflow==2.10.5
+apache-airflow-providers-mysql== 6.1.0
+apache-airflow-providers-http==5.0.0
+apache-airflow-providers-sqlite==4.0.0
+alembic==1.14.1
+sqlalchemy==1.4.54
+
+# ✅ 데이터베이스 (MySQL 연결)
+pymysql==1.1.1
+mysqlclient==2.2.7
+
+# ✅ 크롤링 관련 패키지
+beautifulsoup4==4.13.3
+requests==2.32.3
+selenium==4.28.1
+webdriver-manager==4.0.2
+
+# ✅ 데이터 처리
+pandas==2.2.3
+numpy==2.2.3
+
+# ✅ 감성 분석 관련 패키지 (GPT API 활용)
+openai==1.65.2
+deep-translator==1.11.4

@@ -1,0 +1,104 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = "ap-northeast-2"
+        ECR_REPO = "856238202384.dkr.ecr.ap-northeast-2.amazonaws.com/crypto_project"
+        EC2_USER = "ubuntu"
+        EC2_HOST = "10.0.1.68"  // Airflow있는 EC2 프라이빗 IP 
+        TAG = "${BUILD_NUMBER}" // Jenkins 빌드 번호를 태그로 사용 
+	WORKSPACE = "/var/lib/jenkins/workspace/crypto_project_CICD"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git branch: 'main', credentialsId: 'github-pat', url: 'https://github.com/sojy001-git/crypto_project.git'
+            }
+        }
+
+        stage('Login to AWS ECR') {
+            steps {
+                script {
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}"
+                }
+            }
+        }
+
+        stage('Build & Tag & Push Docker Images to ECR') {
+            steps {
+                script {
+                    sh """
+		    echo "🛑 이전 Docker 이미지 정리"
+		    docker system prune -af  # 사용하지 않는 이미지, 컨테이너, 볼륨 정리
+      
+                    echo "🐳 Docker 이미지 빌드 시작..." 
+		    docker-compose -f docker-compose.build.yml build --no-cache  
+      
+                    echo "🏷️ Docker 이미지 태깅"                    
+                    docker tag crypto_project-airflow-webserver:latest ${ECR_REPO}:webserver-${TAG}
+                    docker tag crypto_project-airflow-scheduler:latest ${ECR_REPO}:scheduler-${TAG}
+
+                    echo "📤 AWS ECR로 이미지 Push"                    
+                    docker push ${ECR_REPO}:webserver-${TAG}
+                    docker push ${ECR_REPO}:scheduler-${TAG}
+                    
+                    # 최신 버전 관리를 위해 latest 태그도 추가
+                    docker tag ${ECR_REPO}:webserver-${TAG} ${ECR_REPO}:webserver-latest
+                    docker tag ${ECR_REPO}:scheduler-${TAG} ${ECR_REPO}:scheduler-latest
+                    docker push ${ECR_REPO}:webserver-latest
+                    docker push ${ECR_REPO}:scheduler-latest
+                    """
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                script {
+                        sh """
+                        echo "🔗 EC2(${EC2_HOST})에 배포 시작..."   
+			
+			echo "🗑️ 기존 프로젝트 폴더 삭제 (Airflow EC2)"
+			ssh -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "rm -rf /home/ubuntu/crypto_project/"
+   
+                        echo "📁 최신 GitHub 코드 Airflow EC2로 복사"
+			scp -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no -r ${WORKSPACE} ${EC2_USER}@${EC2_HOST}:/home/ubuntu/crypto_project/
+   
+                        echo "🚀 Docker 컨테이너 업데이트"
+			ssh -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
+AWS_REGION="ap-northeast-2"
+ECR_REPO="856238202384.dkr.ecr.ap-northeast-2.amazonaws.com/crypto_project"
+
+echo "🔑 AWS ECR 로그인"
+aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
+
+cd /home/ubuntu/crypto_project
+
+echo "🛑 기존 컨테이너 정리 및 사용하지 않는 리소스 삭제"
+docker-compose -f docker-compose.deploy.yml down || true  # 기존 컨테이너 삭제
+docker system prune -af  # 사용하지 않는 이미지 & 네트워크 삭제
+docker volume prune -f  # 사용하지 않는 볼륨 삭제
+docker network prune -f  # 사용하지 않는 네트워크 삭제
+
+echo "📥 최신 Docker 이미지 Pull"
+docker-compose -f docker-compose.deploy.yml pull  # 🔥 최신 버전 이미지 가져오기
+
+echo "🚀 새로운 컨테이너 실행"
+docker-compose -f docker-compose.deploy.yml up -d
+EOF
+                        """
+                 }
+	    }
+        }	
+    }    
+	
+    post {
+        success {
+            echo "✅ 배포 완료!"
+        }
+        failure {
+            echo "❌ 배포 실패!"
+        }
+    }
+}
