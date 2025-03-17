@@ -109,7 +109,10 @@ pipeline {
                         echo "📁 최신 GitHub 코드 Airflow EC2로 복사"
 			scp -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no -r ${WORKSPACE}/AI-repo/docker_jenkins/* ${EC2_USER}@${EC2_HOST}:/home/ubuntu/docker_jenkins/
    
-                        echo "🚀 Docker 컨테이너 업데이트"
+			echo "📂 `.env` 파일을 docker_jenkins 폴더로 복사"
+             		ssh -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "cp /home/ubuntu/.env /home/ubuntu/docker_jenkins/.env"  
+			
+   			echo "🚀 Docker 컨테이너 업데이트"
 			ssh -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
 AWS_REGION="ap-northeast-2"
 ECR_REPO="941377153895.dkr.ecr.ap-northeast-2.amazonaws.com/oops/ai"
