@@ -99,6 +99,9 @@ pipeline {
 			
 			echo "🗑️ 기존 프로젝트 폴더 삭제 (Airflow EC2)"
 			ssh -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "rm -rf /home/ubuntu/docker_jenkins/"
+
+			echo "📁 EC2에 docker_jenkins 폴더 생성 (없으면 생성)"
+			ssh -i /var/lib/jenkins/PROFECT_OOPS!\\.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "mkdir -p /home/ubuntu/docker_jenkins/"
    
                         echo "📁 최신 GitHub 코드 Airflow EC2로 복사"
 			scp -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no -r ${WORKSPACE} ${EC2_USER}@${EC2_HOST}:/home/ubuntu/docker_jenkins/
