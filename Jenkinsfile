@@ -7,7 +7,7 @@ pipeline {
         EC2_USER = "ubuntu"
         EC2_HOST = "10.0.5.248"  // Airflow있는 EC2 프라이빗 IP 
         TAG = "${BUILD_NUMBER}" // Jenkins 빌드 번호를 태그로 사용 
-	WORKSPACE = "/var/lib/jenkins/docker_jenkins_cicd"
+	WORKSPACE = "/var/lib/jenkins/AI"
 	REPO_URL = "https://github.com/profect-Oops/AI-repo.git"
 	BRANCH = "main"
     }
