@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS crypto_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS oops CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USE crypto_db;
+USE oops;
 
 -- ✅ 1. news 테이블 생성 (VARCHAR(10000) → TEXT 변경)
 CREATE TABLE news (
