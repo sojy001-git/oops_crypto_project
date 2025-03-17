@@ -82,20 +82,20 @@ pipeline {
                         echo "🔗 EC2(${EC2_HOST})에 배포 시작..."   
 			
 			echo "🗑️ 기존 프로젝트 폴더 삭제 (Airflow EC2)"
-			ssh -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "rm -rf /home/ubuntu/crypto_project/"
+			ssh -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "rm -rf /home/ubuntu/docker_jenkins/"
    
                         echo "📁 최신 GitHub 코드 Airflow EC2로 복사"
-			scp -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no -r ${WORKSPACE} ${EC2_USER}@${EC2_HOST}:/home/ubuntu/crypto_project/
+			scp -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no -r ${WORKSPACE} ${EC2_USER}@${EC2_HOST}:/home/ubuntu/docker_jenkins/
    
                         echo "🚀 Docker 컨테이너 업데이트"
 			ssh -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
 AWS_REGION="ap-northeast-2"
-ECR_REPO="856238202384.dkr.ecr.ap-northeast-2.amazonaws.com/crypto_project"
+ECR_REPO="941377153895.dkr.ecr.ap-northeast-2.amazonaws.com/oops/ai"
 
 echo "🔑 AWS ECR 로그인"
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO}
 
-cd /home/ubuntu/crypto_project
+cd /home/ubuntu/docker_jenkins
 
 echo "🛑 기존 컨테이너 정리 및 사용하지 않는 리소스 삭제"
 docker-compose -f docker-compose.deploy.yml down || true  # 기존 컨테이너 삭제
