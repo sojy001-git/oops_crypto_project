@@ -35,7 +35,10 @@ pipeline {
 
                     # 실제 체크아웃 실행 (docker_jenkins 폴더만 가져옴)
                     git checkout ${BRANCH}
-                    '''	    
+
+                    # 필요 없는 메타데이터 제거 (Jenkins가 전체 리포지토리를 다루지 않도록)
+		    rm -rf .git
+		    '''	    
 	    }
         }
 	    
@@ -104,7 +107,7 @@ pipeline {
 			ssh -i /var/lib/jenkins/PROFECT_OOPS!\\.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "mkdir -p /home/ubuntu/docker_jenkins/"
    
                         echo "📁 최신 GitHub 코드 Airflow EC2로 복사"
-			scp -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no -r ${WORKSPACE} ${EC2_USER}@${EC2_HOST}:/home/ubuntu/docker_jenkins/
+			scp -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no -r ${WORKSPACE}/AI-repo/docker_jenkins/* ${EC2_USER}@${EC2_HOST}:/home/ubuntu/docker_jenkins/
    
                         echo "🚀 Docker 컨테이너 업데이트"
 			ssh -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
