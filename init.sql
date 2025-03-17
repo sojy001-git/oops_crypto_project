@@ -1,37 +1,24 @@
-CREATE DATABASE IF NOT EXISTS oops CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
+SHOW TABLES;
 USE oops;
 
--- ✅ 1. news 테이블 생성 (VARCHAR(10000) → TEXT 변경)
-CREATE TABLE news (
-    news_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    title VARCHAR(500) NOT NULL,
-    content VARCHAR(5000) NOT NULL,
-    newspaper VARCHAR(250),
-    source VARCHAR(500),
-    uploadtime DATETIME NOT NULL,
-    title_en VARCHAR(500),
-    content_en VARCHAR(5000) NOT NULL
-);
+-- ✅ 1. news 테이블 변경
+ALTER TABLE news MODIFY COLUMN title VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+ALTER TABLE news MODIFY COLUMN content VARCHAR(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+ALTER TABLE news MODIFY COLUMN newspapaer VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
+ALTER TABLE news MODIFY COLUMN source VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
+ALTER TABLE news MODIFY COLUMN title_en VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+ALTER TABLE news MODIFY COLUMN contnet_en VARCHAR(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
 
--- ✅ 2. coin 테이블 생성 (쉼표 추가 & 오류 수정)
-CREATE TABLE coin (
-    coin_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    prospects DECIMAL(5,2),
-    coin_picture VARCHAR(500),
-    ticker VARCHAR(250) UNIQUE,  -- ✅ 쉼표 추가
-    gpt_data VARCHAR(5000)
-);
+-- ✅ 2. coin 테이블 변경
+ALTER TABLE coin MODIFY COLUMN name VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;
+ALTER TABLE coin MODIFY COLUMN prospects DECIMAL(5,2);
+ALTER TABLE coin MODIFY COLUMN coin_picture VARCHAR(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
+ALTER TABLE coin MODIFY COLUMN ticker VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci UNIQUE;
+ALTER TABLE coin MODIFY COLUMN gpt_data VARCHAR(5000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
 
--- ✅ 3. news_coin_relation 테이블 생성 (FK 관계 설정)
-CREATE TABLE news_coin_relation (
-    news_id BIGINT NOT NULL,
-    coin_id BIGINT NOT NULL,
-    PRIMARY KEY (news_id, coin_id),
-    FOREIGN KEY (news_id) REFERENCES news(news_id) ON DELETE CASCADE,
-    FOREIGN KEY (coin_id) REFERENCES coin(coin_id) ON DELETE CASCADE
-);
+-- ✅ 3. news_coin_relation 테이블 변
+ALTER TABLE news_coin_relation ADD FOREIGN KEY (news_id) REFERENCES news(news_id) ON DELETE CASCADE;
+ALTER TABLE news_coin_relation ADD FOREIGN KEY (coin_id) REFERENCES coin(coin_id) ON DELETE CASCADE;
 
 -- ✅ 4. news_sentiment 테이블 생성 (FK 관계 설정)
 CREATE TABLE news_sentiment (
