@@ -82,13 +82,13 @@ pipeline {
                         echo "🔗 EC2(${EC2_HOST})에 배포 시작..."   
 			
 			echo "🗑️ 기존 프로젝트 폴더 삭제 (Airflow EC2)"
-			ssh -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "rm -rf /home/ubuntu/docker_jenkins/"
+			ssh -i /var/lib/jenkins/PROFECT_OOPS\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "rm -rf /home/ubuntu/docker_jenkins/"
    
                         echo "📁 최신 GitHub 코드 Airflow EC2로 복사"
-			scp -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no -r ${WORKSPACE} ${EC2_USER}@${EC2_HOST}:/home/ubuntu/docker_jenkins/
+			scp -i /var/lib/jenkins/PROFECT_OOPS\!.pem -o StrictHostKeyChecking=no -r ${WORKSPACE} ${EC2_USER}@${EC2_HOST}:/home/ubuntu/docker_jenkins/
    
                         echo "🚀 Docker 컨테이너 업데이트"
-			ssh -i /var/lib/jenkins/.ssh/airflow-ec2-access-key.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
+			ssh -i /var/lib/jenkins/PROFECT_OOPS\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
 AWS_REGION="ap-northeast-2"
 ECR_REPO="941377153895.dkr.ecr.ap-northeast-2.amazonaws.com/oops/ai"
 
