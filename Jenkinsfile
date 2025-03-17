@@ -70,6 +70,7 @@ pipeline {
 		    docker system prune -af  # 사용하지 않는 이미지, 컨테이너, 볼륨 정리
       
                     echo "🐳 Docker 이미지 빌드 시작..." 
+	            cd /var/lib/jenkins/workspace/AI/AI-repo/docker_jenkins/  # ✅ 경로 이동	    
 		    docker-compose -f docker-compose.build.yml build --no-cache  
       
                     echo "🏷️ Docker 이미지 태깅"                    
