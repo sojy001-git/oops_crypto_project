@@ -7,7 +7,7 @@ pipeline {
         EC2_USER = "ubuntu"
         EC2_HOST = "10.0.5.248"  // Airflow있는 EC2 프라이빗 IP 
         TAG = "${BUILD_NUMBER}" // Jenkins 빌드 번호를 태그로 사용 
-	WORKSPACE = "/var/lib/jenkins/AI"
+	WORKSPACE = "/var/lib/jenkins/workspace/AI"
 	REPO_URL = "https://github.com/profect-Oops/AI-repo.git"
 	BRANCH = "main"
     }
@@ -44,7 +44,7 @@ pipeline {
                 sh '''
                 # .env 파일이 존재하는지 확인 후 복사
                 if [ -f /var/lib/jenkins/.env ]; then
-                    cp /var/lib/jenkins/.env /var/lib/jenkins/AI/AI-repo/docker_jenkins/.env
+                    cp /var/lib/jenkins/.env /var/lib/jenkins/workspace/AI/AI-repo/docker_jenkins/.env
                 else
                     echo ".env 파일이 존재하지 않습니다!"
                     exit 1
