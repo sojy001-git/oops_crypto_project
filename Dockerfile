@@ -79,10 +79,10 @@ ENV AIRFLOW_HOME="/opt/airflow"
 
 # ✅ 환경 변수 설정 (MySQL & API 키)
 ENV AIRFLOW_HOME=/opt/airflow
-ENV DB_HOST=crypto-db-master.ch0swm446293.ap-northeast-2.rds.amazonaws.com
+ENV DB_HOST=oops-mysql-db.cjw2u00m0szc.ap-northeast-2.rds.amazonaws.com
 ENV DB_PORT=3306
-ENV DB_USER=admin
-ENV DB_NAME=crypto_db
+ENV DB_USER=oops_team
+ENV DB_NAME=oops
 
 # 포트 오픈
 EXPOSE 8080
