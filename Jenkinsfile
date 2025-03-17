@@ -3,18 +3,40 @@ pipeline {
 
     environment {
         AWS_REGION = "ap-northeast-2"
-        ECR_REPO = "856238202384.dkr.ecr.ap-northeast-2.amazonaws.com/crypto_project"
+        ECR_REPO = "941377153895.dkr.ecr.ap-northeast-2.amazonaws.com/oops/ai"
         EC2_USER = "ubuntu"
-        EC2_HOST = "10.0.1.68"  // Airflow있는 EC2 프라이빗 IP 
+        EC2_HOST = "10.0.5.248"  // Airflow있는 EC2 프라이빗 IP 
         TAG = "${BUILD_NUMBER}" // Jenkins 빌드 번호를 태그로 사용 
-	WORKSPACE = "/var/lib/jenkins/workspace/crypto_project_CICD"
+	WORKSPACE = "/var/lib/jenkins/docker_jenkins_cicd"
+	REPO_URL = "https://github.com/profect-Oops/AI-repo.git"
+	BRANCH = "main"
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', credentialsId: 'github-pat', url: 'https://github.com/sojy001-git/crypto_project.git'
-            }
+                   sh '''
+                    # 기존 폴더 삭제 (기존 데이터가 남아 있으면 문제 발생 가능)
+                    rm -rf AI-repo
+
+                    # --no-checkout: 아직 체크아웃 안 함
+                    # --depth 1: 커밋 히스토리 없이 최신 코드만 가져옴
+                    # --filter=tree:0: 필요 없는 폴더는 다운로드하지 않음
+                    git clone --no-checkout --depth 1 --filter=tree:0 ${REPO_URL} AI-repo
+
+                    # AI-repo 디렉토리로 이동
+                    cd AI-repo
+
+                    # Sparse Checkout 활성화
+                    git sparse-checkout init --cone
+
+                    # docker_jenkins 폴더만 가져오기
+                    git sparse-checkout set docker_jenkins
+
+                    # 실제 체크아웃 실행 (docker_jenkins 폴더만 가져옴)
+                    git checkout ${BRANCH}
+                    '''	    
+	    }
         }
 
         stage('Login to AWS ECR') {
