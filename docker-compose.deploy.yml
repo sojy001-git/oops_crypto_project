@@ -1,6 +1,6 @@
 services:
   airflow-webserver:
-    image: 856238202384.dkr.ecr.ap-northeast-2.amazonaws.com/crypto_project:webserver-latest  # ECR 이미지 사용
+    image: 941377153895.dkr.ecr.ap-northeast-2.amazonaws.com/oops/ai:webserver-latest  # ECR 이미지 사용
     container_name: airflow-webserver
     restart: always
     env_file:
@@ -18,7 +18,7 @@ services:
       - airflow-scheduler
 
   airflow-scheduler:
-    image: 856238202384.dkr.ecr.ap-northeast-2.amazonaws.com/crypto_project:scheduler-latest  # ECR 이미지 사용
+    image: 941377153895.dkr.ecr.ap-northeast-2.amazonaws.com/oops/ai:scheduler-latest  # ECR 이미지 사용
     container_name: airflow-scheduler
     restart: always
     env_file:
