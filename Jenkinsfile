@@ -42,21 +42,6 @@ pipeline {
 	    }
         }
 	    
-	stage('Copy .env file') {
-            steps {
-                sh '''
-                # .env 파일이 존재하는지 확인 후 복사
-                if [ -f /var/lib/jenkins/.env ]; then
-                    cp /var/lib/jenkins/.env /var/lib/jenkins/workspace/AI/AI-repo/docker_jenkins/.env
-                else
-                    echo ".env 파일이 존재하지 않습니다!"
-                    exit 1
-                fi
-                '''
-            }
-        }
-	
-	    
         stage('Login to AWS ECR') {
             steps {
                 script {
