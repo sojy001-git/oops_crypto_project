@@ -11,6 +11,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 import time
 from datetime import datetime, timedelta
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 # ✅ .env 파일 로드 (API 키 보안 처리)
