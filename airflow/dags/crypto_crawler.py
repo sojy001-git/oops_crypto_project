@@ -11,9 +11,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import load_dotenv
 import time
 from datetime import datetime, timedelta
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
 
 # ✅ .env 파일 로드 (API 키 보안 처리)
 load_dotenv("/opt/airflow/.env")
@@ -78,21 +75,13 @@ def get_coin_info(ticker):
 def get_news_content(news_url):
     try:
         driver.get(news_url)
-
-        # 본문 로딩까지 명시적으로 기다리기
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "article, .entry-content, .post-content"))
-        )
-
+        time.sleep(3)
         soup = BeautifulSoup(driver.page_source, "html.parser")
-        print("🔍 페이지 일부 미리보기:")
-        print(driver.page_source[:1000])  # 내용 확인용
 
-        content_element = soup.select_one("article, .entry-content, .post-content, .description-body, .article-content")
+        content_element = soup.select_one("div.description-body, div.article-content, div.entry-content, div.post-content, article")
         if content_element:
-            article_text = "\n".join([p.get_text().strip() for p in content_element.find_all("p")])
+            article_text = "\n".join([p.get_text().strip() for p in content_element.find_all("p") if p.get_text().strip()])
         else:
-            print("❗ 본문 셀렉터 못 찾음, fallback 시도")
             paragraphs = [p.get_text().strip() for p in soup.find_all("p") if len(p.get_text().strip()) > 10]
             article_text = "\n".join(paragraphs) if paragraphs else "본문 없음"
 
@@ -104,7 +93,7 @@ def get_news_content(news_url):
     except Exception as e:
         print(f"❌ 본문 크롤링 오류: {e}")
         return None, None
-        
+
 # ✅ 특정 뉴스 제외하는 필터링 함수 추가
 def should_exclude_news(content_en):
     """ 특정 뉴스 필터링 (트위터 뉴스, 유튜브 뉴스, 쿠키 메시지) """
