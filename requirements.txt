@@ -23,3 +23,7 @@ numpy==2.2.3
 # ✅ 감성 분석 관련 패키지 (GPT API 활용)
 openai==1.65.2
 deep-translator==1.11.4
+
+#탐지 우회
+undetected-chromedriver==3.5.5
+selenium-stealth==1.0.6
