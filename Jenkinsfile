@@ -36,8 +36,8 @@ pipeline {
                     # 실제 체크아웃 실행 (docker_jenkins 폴더만 가져옴)
                     git checkout ${BRANCH}
 
-                    # 필요 없는 메타데이터 제거 (Jenkins가 전체 리포지토리를 다루지 않도록)
-		    rm -rf .git
+		    # 필요 없는 메타데이터 제거 (Jenkins가 전체 리포지토리를 다루지 않도록)      
+		    rm -rf .git	
 		    '''	    
 	    }
         }
@@ -58,7 +58,7 @@ pipeline {
 		    docker system prune -af  # 사용하지 않는 이미지, 컨테이너, 볼륨 정리
       
                     echo "🐳 Docker 이미지 빌드 시작..." 
-	            cd /var/lib/jenkins/workspace/AI/AI-repo/docker_jenkins/  # ✅ 경로 이동	    
+	            cd /var/lib/jenkins/workspace/AI/AI-repo/docker_jenkins/  # ✅ 경로 이동		    
 		    docker-compose -f docker-compose.build.yml build --no-cache  
       
                     echo "🏷️ Docker 이미지 태깅"                    
@@ -87,17 +87,17 @@ pipeline {
 			
 			echo "🗑️ 기존 프로젝트 폴더 삭제 (Airflow EC2)"
 			ssh -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "rm -rf /home/ubuntu/docker_jenkins/"
-
+   
 			echo "📁 EC2에 docker_jenkins 폴더 생성 (없으면 생성)"
 			ssh -i /var/lib/jenkins/PROFECT_OOPS!\\.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "mkdir -p /home/ubuntu/docker_jenkins/"
-   
-                        echo "📁 최신 GitHub 코드 Airflow EC2로 복사"
+   			
+      			echo "📁 최신 GitHub 코드 Airflow EC2로 복사"
 			scp -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no -r ${WORKSPACE}/AI-repo/docker_jenkins/* ${EC2_USER}@${EC2_HOST}:/home/ubuntu/docker_jenkins/
+
+            		echo "📂 `.env` 파일을 docker_jenkins 폴더로 복사"
+            		ssh -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "cp /home/ubuntu/.env /home/ubuntu/docker_jenkins/.env"
    
-			echo "📂 `.env` 파일을 docker_jenkins 폴더로 복사"
-             		ssh -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} "cp /home/ubuntu/.env /home/ubuntu/docker_jenkins/.env"  
-			
-   			echo "🚀 Docker 컨테이너 업데이트"
+                        echo "🚀 Docker 컨테이너 업데이트"
 			ssh -i /var/lib/jenkins/PROFECT_OOPS\\!.pem -o StrictHostKeyChecking=no ${EC2_USER}@${EC2_HOST} <<EOF
 AWS_REGION="ap-northeast-2"
 ECR_REPO="941377153895.dkr.ecr.ap-northeast-2.amazonaws.com/oops/ai"
